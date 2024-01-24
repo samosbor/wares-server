@@ -5,9 +5,9 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "server": "node server.js --env-file=.env.development",
+    "server": "node --env-file=.env.development server.js",
     "format": "prettier --write routes/ db.js server.js",
-    "prod": "node server.js --env-file=.env.production"
+    "prod": "node --env-file=.env.production server.js"
   },
   "author": "",
   "license": "ISC",
