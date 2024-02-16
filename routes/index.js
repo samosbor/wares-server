@@ -1,11 +1,8 @@
-import users from './users.js'
 import assets from './assets.js'
+import users from './users.js'
 
-const mountRoutes = (app) => {
-    app.use('/users', users)
+// function to mount routes on the app
+export default function mountRoutes(app) {
     app.use('/assets', assets)
-    console.log(assets)
-    // etc..
+    app.use('/users', users)
 }
-
-export default mountRoutes
