@@ -1,9 +1,10 @@
 import users from './users.js'
-import items from './items.js'
+import assets from './assets.js'
 
 const mountRoutes = (app) => {
     app.use('/users', users)
-    app.use('/items', items)
+    app.use('/assets', assets)
+    console.log(assets)
     // etc..
 }
 
