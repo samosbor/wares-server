@@ -3,8 +3,6 @@ import { query } from '../db.js'
 
 const router = new Router()
 
-export default router
-
 router.post('/scan/:id', async (req, res) => {
     console.log('scanning')
     // sanity check
@@ -52,3 +50,5 @@ async function getAssetByBarcode(barcode) {
         throw new Error('Internal server error');
     }
 }
+
+export default router
