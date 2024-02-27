@@ -33,7 +33,10 @@ router.post('/scan/:id', async (req, res) => {
         location_id, //do some work to get this
         req.body.wifi_ap
     ])
-    res.send(rows[0])
+    const scan_id = rows[0].scan_id
+    // send back the scan and asset data
+    const scanData = await getScanDataById(scan_id)
+    res.send(scanData)
 })
 
 // Function to get asset by barcode
@@ -61,6 +64,25 @@ async function getUserByEmail(google_email) {
         throw new Error('Could not find user by email')
     } else {
         return rows[0] // Return the found user
+    }
+}
+
+// Function to get all joined scan event and asset data by scan_id
+async function getScanDataById(scan_id) {
+    const getScanDataByIdSqlString = `
+    SELECT se.scan_id, l.building_name, l.room_number, p.provider_name, a."name", a.current_value, a.purchase_date, a.barcode, a.notes 
+    FROM scan_events se
+            left JOIN assets a ON se.asset_id = a.asset_id
+            left JOIN locations l  ON se.location_id = l.location_id
+            left JOIN providers p ON a.provider_id = p.provider_id
+            WHERE se.scan_id = $1
+    `
+    const { rows } = await query(getScanDataByIdSqlString, [scan_id])
+    if (rows.length === 0) {
+        console.error('Could not find scan data for this scan')
+        throw new Error('Could not find scan data for this scan')
+    } else {
+        return rows[0] // Return the found scan data
     }
 }
 
