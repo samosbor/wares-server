@@ -26,13 +26,15 @@ router.post('/scan/:id', async (req, res) => {
 
     const insertScanEventSqlString = `INSERT INTO scan_events
   (asset_id, user_id, location_id, wifi_ap)
-  VALUES($1, $2, $3, $4);`
+  VALUES($1, $2, $3, $4)
+  RETURNING scan_id;`
     const { rows } = await query(insertScanEventSqlString, [
         asset.asset_id,
         user_id,
         location_id, //do some work to get this
         req.body.wifi_ap
     ])
+    console.log(rows)
     const scan_id = rows[0].scan_id
     // send back the scan and asset data
     const scanData = await getScanDataById(scan_id)
