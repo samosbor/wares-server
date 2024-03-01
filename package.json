@@ -7,7 +7,7 @@
   "scripts": {
     "server": "node --env-file=.env.development server.js",
     "format": "prettier --write routes/ db.js server.js",
-    "prod": "node --env-file=.env.production server.js",
+    "prod": "node server.js",
     "test": "jest"
   },
   "author": "",
