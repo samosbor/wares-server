@@ -14,10 +14,10 @@ jobs:
 
     steps:
     - name: Checkout repo
-      uses: actions/checkout@latest
+      uses: actions/checkout@v4
 
     - name: Log in to Github Container Registry
-      uses: docker/login-action@latest
+      uses: docker/login-action@v3
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
@@ -25,12 +25,12 @@ jobs:
 
     - name: Extract metadata (tags, labels) for Docker
       id: meta
-      uses: docker/metadata-action@latest
+      uses: docker/metadata-action@v5
       with:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
     - name: Build and push Docker image
-      uses: docker/build-push-action@latest
+      uses: docker/build-push-action@v5
       with:
           context: .
           push: true
