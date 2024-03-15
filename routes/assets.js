@@ -41,6 +41,40 @@ router.post('/scan/:id', async (req, res) => {
     res.send(scanData)
 })
 
+// Put endpoint to update scan event
+router.put('/scan/:id', async (req, res) => {
+    const id = req.params.id
+    const updateScanEventSqlString = `
+    UPDATE scan_events
+    SET location_id = $1
+    WHERE scan_id = $2
+    RETURNING scan_id;
+    `
+    const { rows } = await query(updateScanEventSqlString, [req.body.location_id, id])
+    const scan_id = rows[0].scan_id
+    updateAssetById(req.body.asset_id, req.body)
+    const scanData = await getScanDataById(scan_id)
+    res.send(scanData)
+})
+
+// Function to update asset by id
+async function updateAssetById(asset_id, reqbody) {
+    const updateAssetSqlString = `
+    UPDATE assets
+    SET name = $1, current_value = $2, purchase_date = $3, notes = $4
+    WHERE asset_id = $5
+    RETURNING asset_id;
+    `
+    const { rows } = await query(updateAssetSqlString, [
+        reqbody.name,
+        reqbody.current_value,
+        reqbody.purchase_date,
+        reqbody.notes,
+        asset_id
+    ])
+    return rows[0].asset_id
+}
+
 // Function to get asset by barcode
 async function getAssetByBarcode(barcode) {
     const getAssetByBarcodeSqlString = `
@@ -72,7 +106,7 @@ async function getUserByEmail(google_email) {
 // Function to get all joined scan event and asset data by scan_id
 async function getScanDataById(scan_id) {
     const getScanDataByIdSqlString = `
-    SELECT se.scan_id, l.building_name, l.room_number, p.provider_name, a."name", a.current_value, a.purchase_date, a.barcode, a.notes 
+    SELECT se.scan_id, l.building_name, l.room_number, p.provider_name, a."name", a.current_value, a.purchase_date, a.barcode, a.notes, a.asset_id 
     FROM scan_events se
             left JOIN assets a ON se.asset_id = a.asset_id
             left JOIN locations l  ON se.location_id = l.location_id
