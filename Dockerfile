@@ -3,7 +3,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 COPY . .
-ENV SERVER_URL=http://inventory.kas.tw/
+ENV SERVER_URL=https://inventory.kas.tw/
 # Dont forget to set the other ENV variables when running the container
 EXPOSE 3000
 CMD npm run prod
