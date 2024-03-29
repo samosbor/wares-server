@@ -13,12 +13,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "archiver": "^7.0.1",
+    "bwip-js": "^4.3.2",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "express-promise-router": "^4.1.1",
     "pg": "^8.11.3",
     "prettier": "^3.2.4",
-    "supertest": "^6.3.4"
+    "supertest": "^6.3.4",
+    "tmp": "^0.2.3"
   },
   "devDependencies": {
     "jest": "^29.7.0"
