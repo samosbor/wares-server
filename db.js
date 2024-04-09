@@ -1,7 +1,7 @@
 import pkg from 'pg'
 const { Pool } = pkg
 const pool = new Pool({
-    host: 'localhost',
+    host: process.env.SERVER_URL,
     user: 'postgres',
     password: process.env.DB_PASSWORD,
     max: 20,
