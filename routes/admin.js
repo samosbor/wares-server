@@ -14,7 +14,7 @@ router.get('/all', async (req, res) => {
 
 // post endpoint to print barcodes with bwip-js
 router.get('/print', async (req, res) => {
-    let tmpfilename = `/tmp/${(new Date().toJSON().slice(0,10))}_barcodes.zip`
+    let tmpfilename = `/tmp/${new Date().toJSON().slice(0, 10)}_barcodes.zip`
     const output = fs.createWriteStream(tmpfilename)
     const archive = archiver('zip', {
         zlib: { level: 9 } // Sets the compression level.
