@@ -44,15 +44,17 @@ router.post('/scan/:id', async (req, res) => {
 // Put endpoint to update scan event
 router.put('/scan/:id', async (req, res) => {
     const id = req.params.id
+    const location_id = await getLocationIDByRoomNumber(req.body.room_number)
+
     const updateScanEventSqlString = `
     UPDATE scan_events
     SET location_id = $1
     WHERE scan_id = $2
     RETURNING scan_id;
     `
-    const { rows } = await query(updateScanEventSqlString, [req.body.location_id, id])
+    const { rows } = await query(updateScanEventSqlString, [location_id, id])
     const scan_id = rows[0].scan_id
-    updateAssetById(req.body.asset_id, req.body)
+    await updateAssetById(req.body.asset_id, req.body)
     const scanData = await getScanDataById(scan_id)
     res.send(scanData)
 })
@@ -65,6 +67,8 @@ async function updateAssetById(asset_id, reqbody) {
     WHERE asset_id = $5
     RETURNING asset_id;
     `
+    console.log(reqbody)
+    console.log(asset_id)
     const { rows } = await query(updateAssetSqlString, [
         reqbody.name,
         reqbody.current_value,
@@ -72,6 +76,7 @@ async function updateAssetById(asset_id, reqbody) {
         reqbody.notes,
         asset_id
     ])
+    console.log(rows)
     return rows[0].asset_id
 }
 
@@ -117,6 +122,20 @@ async function getScanDataById(scan_id) {
         throw new Error('Could not find scan data for this scan')
     } else {
         return rows[0] // Return the found scan data
+    }
+}
+
+// Function to get location by room_number
+async function getLocationIDByRoomNumber(room_number) {
+    const getLocationByRoomNumberSqlString = `
+    SELECT * FROM locations WHERE room_number = $1
+    `
+    const { rows } = await query(getLocationByRoomNumberSqlString, [room_number])
+    if (rows.length === 0) {
+        console.error('Could not find location by room_number')
+        throw new Error('Could not find location by room_number')
+    } else {
+        return rows[0].location_id // Return the found location
     }
 }
 
