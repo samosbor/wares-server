@@ -78,7 +78,10 @@ async function updateAssetById(asset_id, reqbody) {
 // Function to get asset by barcode
 async function getAssetByBarcode(barcode) {
     const getAssetByBarcodeSqlString = `
-        SELECT * FROM assets_extended WHERE barcode = $1
+    SELECT a.*, at2.barcode
+    FROM assets a
+    INNER JOIN asset_tags at2 ON a.asset_id = at2.asset_id
+    WHERE at2.barcode = $1;
     `
     const { rows } = await query(getAssetByBarcodeSqlString, [barcode])
     if (rows.length === 0) {
@@ -106,7 +109,7 @@ async function getUserByEmail(google_email) {
 // Function to get all joined scan event and asset data by scan_id
 async function getScanDataById(scan_id) {
     const getScanDataByIdSqlString = `
-    SELECT * from scan_events WHERE scan_id = $1
+    SELECT * from asset_scans WHERE scan_id = $1
     `
     const { rows } = await query(getScanDataByIdSqlString, [scan_id])
     if (rows.length === 0) {
