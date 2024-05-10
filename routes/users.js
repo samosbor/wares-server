@@ -4,9 +4,24 @@ import { query } from '../db.js'
 const router = new Router()
 
 router.get('/:id', async (req, res) => {
-    console.log('getting user')
     const { id } = req.params
     const { rows } = await query('SELECT * FROM users WHERE user_id = $1', [id])
+    res.send(rows[0])
+})
+
+// route to get user by email
+router.get('/email/:email', async (req, res) => {
+    const { email } = req.params
+    const { rows } = await query('SELECT * FROM users WHERE email = $1', [email])
+    // if there are no rows, add the user to the database
+    if (rows.length === 0) {
+        await query('INSERT INTO users (email, role) VALUES ($1, $2)', [email, 'user'])
+        const { rows } = await query('SELECT * FROM users WHERE email = $1', [email])
+        res.send(rows[0])
+        return
+    }
+
+
     res.send(rows[0])
 })
 
@@ -16,10 +31,10 @@ router.get('/admin', async (req, res) => {
     res.send(rows)
 })
 
-// route to create user with fields google_user_id, google_email, role
+// route to create user with fields email, role
 router.post('/', async (req, res) => {
-    const { google_user_id, google_email, role } = req.body
-    await query('INSERT INTO users (google_user_id, google_email, role) VALUES ($1, $2, $3)', [google_user_id, google_email, role])
+    const { email, role } = req.body
+    await query('INSERT INTO users (email, role) VALUES ($1, $2)', [email, role])
     res.send('User created')
 })
 

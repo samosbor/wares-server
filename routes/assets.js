@@ -19,7 +19,7 @@ router.post('/scan/:id', async (req, res) => {
     const location_id = null
     var user_id = req.body.user_id
     if (user_id == '') {
-        await getUserByEmail(req.body.google_email).then((user) => {
+        await getUserByEmail(req.body.email).then((user) => {
             user_id = user.user_id
         })
     }
@@ -97,12 +97,12 @@ async function getAssetByBarcode(barcode) {
     }
 }
 
-// Funtion to get user by google_email
-async function getUserByEmail(google_email) {
+// Funtion to get user by email
+async function getUserByEmail(email) {
     const getUserByEmailSqlString = `
-        SELECT * FROM users WHERE google_email = $1
+        SELECT * FROM users WHERE email = $1
     `
-    const { rows } = await query(getUserByEmailSqlString, [google_email])
+    const { rows } = await query(getUserByEmailSqlString, [email])
     if (rows.length === 0) {
         console.error('Could not find user by email')
         throw new Error('Could not find user by email')
