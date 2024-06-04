@@ -41,6 +41,32 @@ router.post('/scan/:id', async (req, res) => {
     res.send(scanData)
 })
 
+// get an asset_extended by asset_id
+router.get('/:id', async (req, res) => {
+    const id = req.params.id
+    const getAssetExtendedSqlString = `
+    SELECT a.*
+    FROM assets_extended a
+    WHERE a.asset_id = $1;
+    `
+    const { rows } = await query(getAssetExtendedSqlString, [id])
+    if (rows.length === 0) {
+        console.error('Could not find asset with this id')
+        throw new Error('Could not find asset with this id')
+    } else {
+        res.send(rows[0]) // Return the found asset
+    }
+})
+
+router.get('/:id/history', async (req, res) => {
+    const id = req.params.id
+    const getAssetHistorySqlString = `
+    SELECT * FROM scan_history WHERE asset_id = $1
+    `
+    const { rows } = await query(getAssetHistorySqlString, [id])
+    res.send(rows)
+})
+
 // Put endpoint to update scan event
 router.put('/scan/:id', async (req, res) => {
     const id = req.params.id
