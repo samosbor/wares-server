@@ -16,7 +16,7 @@ router.post('/scan/:id', async (req, res) => {
         return asset
     })
 
-    const location_id = null
+    const location_id = await getLatestLocationByAssetId(asset.asset_id)
     var user_id = req.body.user_id
     if (user_id == '') {
         await getUserByEmail(req.body.email).then((user) => {
@@ -162,6 +162,19 @@ async function getLocationIDByRoomNumber(room_number) {
         throw new Error('Could not find location by room_number')
     } else {
         return rows[0].location_id // Return the found location
+    }
+}
+
+// Function to get latest location by asset_id
+async function getLatestLocationByAssetId(asset_id) {
+    const getLatestLocationByAssetIdSqlString = `
+    SELECT location_id FROM scan_events WHERE asset_id = $1 AND location_id NOTNULL ORDER BY scan_id DESC LIMIT 1
+    `
+    const { rows } = await query(getLatestLocationByAssetIdSqlString, [asset_id])
+    if (rows.length === 0) {
+        return null
+    } else {
+        return parseInt(rows[0].location_id) // Return the found location
     }
 }
 
